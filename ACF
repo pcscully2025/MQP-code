@@ -1,0 +1,24 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from statsmodels.graphics.tsaplots import plot_acf
+
+# Load the Excel file
+file_path = '/mnt/data/test_data (1).xlsx'
+data = pd.read_excel(file_path)
+
+# Use the first row as variable names and remove the first row from the data
+data.columns = data.iloc[0]
+data = data.drop(0)
+
+# Convert relevant columns to datetime format
+data['FirstEventDate'] = pd.to_datetime(data['FirstEventDate'])
+data['LatestEventDate'] = pd.to_datetime(data['LatestEventDate'])
+data['PenultimateEventDate'] = pd.to_datetime(data['PenultimateEventDate'])
+
+# Aggregate the data by 'LatestEventDate' (or choose any event date)
+data['YearMonth'] = data['LatestEventDate'].dt.to_period('M')
+time_series = data.groupby('YearMonth').size()
+
+# Plot ACF of the time series
+plot_acf(time_series)
+plt.show()
